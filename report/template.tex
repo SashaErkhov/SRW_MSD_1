@@ -68,7 +68,27 @@
 
 \newpage
 \section{Априорный анализ}
-Как я уже писал выше, этот анализ проведен не мной, в \cite{limitth}. Здесь приведу краткую сводку, без доказательств.
+Как я уже писал выше, этот анализ проведен не мной, в \cite{limitth}. Здесь приведу результаты, без доказательств.
+
+$B_n^\mu$ -- это случайная величина, представляющая количество операций с корзинами (\textit{bucket operations}) в алгоритме сортировки( или внешнюю длину пути в соответствующем \textit{trie}\footnote{Структура данных. Встречается как: Префиксное дерево, trie, prefix trie, ... \cite{trie}}) при сортировке n строк, сгенерированных марковским источником с начальным распределением $\mu$. При апостериорном анализе это будет означать количество операций сравнения.
+
+\textbf{Итого:}
+\begin{equation}
+	\mathbb{E}[B_n^\mu] = \dfrac{1}{H}n\log n+O(n);
+\end{equation}
+\begin{equation}
+	Var(B_n^\mu) = \sigma^2n\log n+O(n\sqrt{\log n}), \text{где}
+\end{equation}
+\begin{equation}
+	\sigma^2 = \dfrac{\pi_0p_{00}p_{01}}{H^3}\left(\log(p_{00}/p_{11})+\dfrac{H_1-H_0}{p_{01}+p_{10}}\right)^2 + \dfrac{\pi_1p_{10}p_{11}}{H^3}\left(\log(p_{10}/p_{11})+\dfrac{H_1-H_0}{p_{01}+p_{10}}\right)^2;
+\end{equation}
+\begin{equation}
+	\dfrac{B_n^\mu-\mathbb{E}[B_n^\mu]}{\sqrt{Var(B_n^\mu)}}  \stackrel{d}{\longrightarrow} \mathcal{N}(0,1)
+\end{equation}
+
+\newpage
+\section{Алгоритм}
+\subsection{Генератор входных данных}
 
 \newpage
 \section{Как пользователься шаблоном}
@@ -160,7 +180,8 @@
 \newpage
 \begin{thebibliography}{1}
     \bibitem{herman} Herman Hollerith and early mechanical/electrical tabulator/sorters [Электронный ресурс] -- Режим доступа: \href{https://www.cs.cornell.edu/courses/JavaAndDS/files/sort6RadixHistory.pdf}{cs.cornell.edu} -- Дата обращения 20.04.2026\\
-    \bibitem{limitth} A Limit Theorem for Radix Sort and Tries with Markovian Input [Электронный ресурс] -- Режим доступа: \href{https://www.math.uni-frankfurt.de/~neiningr/radix_sort.pdf}{radix-sort.pdf} -- Дата обращения 21.04.2026
+    \bibitem{limitth} A Limit Theorem for Radix Sort and Tries with Markovian Input [Электронный ресурс] -- Режим доступа: \href{https://www.math.uni-frankfurt.de/~neiningr/radix_sort.pdf}{radix-sort.pdf} -- Дата обращения 21.04.2026\\
+    \bibitem{trie} Префиксное дерево (trie) [Электронный ресурс] -- Режим доступа: \href{https://habr.com/ru/companies/otus/articles/674378/}{habr} -- Дата обращения 26.04.2026
 \end{thebibliography}
 
 \end{document}
