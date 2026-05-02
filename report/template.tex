@@ -153,6 +153,86 @@ def generator(
 
 \textbf{Пояснения  к коду.} $\mu$ -- \textit{float}, потому что, на самом деле второе число не нужно. Это важно при теоретическом анализе, но для применения Монте-Карло в данном контексте достаточно одного числа, так как алфавит с размерностью 2. Аналогично с матрицей $P$, которая выродилась в вектор. В итоге получаем массив с $n$ словами, каждое из которых длинной $k \pm \Delta$, в соответствии с требованиями описанными в разделе \textit{Постановка задачи}
 
+\subsection{Реализация сортировки}
+Я реализовал \textit{in-place} вариант MSD-сортировки, как классический:
+\begin{lstlisting}[language=Python]
+def MSD_sort(
+    arr: list[str],
+    n: int
+) -> int:
+  stack = [(0, 0, n)] # digit, left, right
+  total_count = 0
+
+  while stack:
+    digit, left, right = stack.pop()
+    if right-left <= 1 or digit >= max(len(arr[i]) for i in range(left, right)):
+      continue
+    count, groups = counting_sort(arr, left, right, digit)
+    total_count += count
+    for i in range(1, len(groups)):
+      new_left, new_right = groups[i]
+      if new_right - new_left > 1:
+        stack.append((digit+1, new_left, new_right))
+
+  return total_count
+\end{lstlisting}
+В процессе необходимо использовать устойчивую сортировку для сортировки отдельных разрядов. Я использовал \textit{counting sort}, так как она приемлема для сортировки символов и оптимальна из-за скудности размера теоретически возможного алфавита:
+\begin{lstlisting}[language=Python]
+def counting_sort(
+    arr: list[str],
+    left: int,
+    right: int,
+    target_digit: int
+) -> tuple[int, list[tuple[int, int]]]:
+  n = right - left
+  R = 3 # None 0 1
+  C = [0] * (R + 1)
+  res = 0 # count of operations
+
+  for i in range(left, right):
+    if target_digit >= len(arr[i]):
+      ch = 0
+    elif arr[i][target_digit] == '0':
+      res += 1
+      ch = 1
+    else:
+      res += 1
+      ch = 2
+    C[ch+1] += 1
+
+  for i in range(R):
+    C[i+1] += C[i]
+
+  new_arr = [None] * n
+  for i in range(left, right):
+    if target_digit >= len(arr[i]):
+      ch = 0
+    elif arr[i][target_digit] == '0':
+      res += 1
+      ch = 1
+    else:
+      res += 1
+      ch = 2
+    new_arr[C[ch]] = arr[i]
+    C[ch] += 1
+
+  for i in range(n):
+    arr[i + left] = new_arr[i]
+
+  groups = []
+  start = left
+  for i in range(R):
+    end = C[i] + left
+    groups.append((start, end))
+    start = end
+
+  return res, groups
+\end{lstlisting}
+Все исходники выложены на GitHub \cite{github}
+
+\subsection{Вычислительный эксперимент}
+sometext
+
 \newpage
 \section{Как пользователься шаблоном}
 Принимая во внимание показатели успешности, постоянное пропагандистское обеспечение нашей деятельности не оставляет шанса для благоприятных перспектив! 
@@ -244,7 +324,8 @@ def generator(
 \begin{thebibliography}{1}
     \bibitem{herman} Herman Hollerith and early mechanical/electrical tabulator/sorters [Электронный ресурс] -- Режим доступа: \href{https://www.cs.cornell.edu/courses/JavaAndDS/files/sort6RadixHistory.pdf}{cs.cornell.edu} -- Дата обращения 20.04.2026\\
     \bibitem{limitth} A Limit Theorem for Radix Sort and Tries with Markovian Input [Электронный ресурс] -- Режим доступа: \href{https://www.math.uni-frankfurt.de/~neiningr/radix_sort.pdf}{radix-sort.pdf} -- Дата обращения 21.04.2026\\
-    \bibitem{trie} Префиксное дерево (trie) [Электронный ресурс] -- Режим доступа: \href{https://habr.com/ru/companies/otus/articles/674378/}{habr} -- Дата обращения 26.04.2026
+    \bibitem{trie} Префиксное дерево (trie) [Электронный ресурс] -- Режим доступа: \href{https://habr.com/ru/companies/otus/articles/674378/}{habr} -- Дата обращения 26.04.2026\\
+    \bibitem{github} SRW\_MSD\_1 Probabilistic a posteriori analysis of the complexity of MSD sorting. [Электронный ресурс] -- Режим доступа: \href{https://github.com/SashaErkhov/SRW_MSD_1}{github.com} -- Дата обращения 02.05.2026
 \end{thebibliography}
 
 \end{document}

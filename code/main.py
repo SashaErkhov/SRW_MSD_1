@@ -1,4 +1,5 @@
 from generator import generator
+from sort import counting_sort, MSD_sort
 
 def test_generator():
   print("test of generator")
@@ -15,5 +16,29 @@ def test_generator():
   print("a = ")
   print(*a, sep="\n")
 
+def test_counting_sort():
+  print("arr = ['101', '110', '100', '100', '011']")
+  arr = ['101', '110', '100', '100', '011']
+  print("left = 0, right = len(arr), digit = 0")
+  left = 0
+  right = len(arr)
+  digit = 0
+  cnt, groups = counting_sort(arr, left, right, digit)
+  print("cnt = ", cnt)
+  print("groups = ", groups)
+  print("sorted_arr = ")
+  print(*arr, sep='\n')
+
+def test_MSD_sort():
+  print("arr = ['101', '110', '100', '100', '011']")
+  arr = ['101', '110', '100', '100', '011']
+  cnt = MSD_sort(arr, 5)
+  print("cnt =", cnt)
+  print("sorted_arr =", *arr)
+
+def generate_data_for_E():
+  # Генерируем данные для распределения средних
+  pass
+
 if __name__ == '__main__':
-  test_generator()
+  test_MSD_sort()

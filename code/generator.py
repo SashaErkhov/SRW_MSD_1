@@ -1,4 +1,5 @@
 import random
+from sort import MSD_sort
 
 def generator(
     n: int,
@@ -27,3 +28,16 @@ def generator(
           word = word + '1'
     array.append(word)
   return array
+
+def experiment(
+    number: int,
+    n: int,
+    k: int,
+    delta: int,
+    mu: int,
+    P: list[float]
+) -> list[int]:
+  res = [None] * number
+  for i in range(number):
+    res[i] = MSD_sort(generator(n, k, delta, mu, P),n)
+  return res
