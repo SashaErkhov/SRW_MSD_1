@@ -1,4 +1,4 @@
-from generator import generator
+from generator import generator, experiment
 from sort import counting_sort, MSD_sort
 
 def test_generator():
@@ -40,5 +40,25 @@ def generate_data_for_E():
   # Генерируем данные для распределения средних
   pass
 
+def generate_data_for_E_simple():
+  # Гененерирую данные для простой проверки мат ожидание
+  number = 10_000
+  n = 100
+  k = 1000
+  delta = 500
+  mu = 0.7
+  P = [0.7, 0.2]
+  exp = experiment(number, n, k, delta, mu, P)
+  with open("exp_E_simple.txt", "w") as f:
+    f.write(f'{number}\n')
+    f.write(f'{n}\n')
+    f.write(f'{k}\n')
+    f.write(f'{delta}\n')
+    f.write(f'{mu}\n')
+    f.write(f'{P[0]} {P[1]}\n')
+    for p in exp:
+      f.write(f'{p} ')
+    f.write('\n')
+
 if __name__ == '__main__':
-  test_MSD_sort()
+  generate_data_for_E_simple()
