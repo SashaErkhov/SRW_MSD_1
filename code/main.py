@@ -1,5 +1,6 @@
 from generator import generator, experiment
 from sort import counting_sort, MSD_sort
+import json
 
 def test_generator():
   print("test of generator")
@@ -36,12 +37,7 @@ def test_MSD_sort():
   print("cnt =", cnt)
   print("sorted_arr =", *arr)
 
-def generate_data_for_E():
-  # Генерируем данные для распределения средних
-  pass
-
-def generate_data_for_E_simple():
-  # Гененерирую данные для простой проверки мат ожидание
+def exp_1():
   number = 10_000
   n = 100
   k = 1000
@@ -60,5 +56,33 @@ def generate_data_for_E_simple():
       f.write(f'{p} ')
     f.write('\n')
 
+def exp_2():
+  exp_2_json = {}
+
+  # Фиксирую разряды и распределение
+  k = 1_000_000
+  delta = 1_000
+  mu = 0.7
+  P = [0.7, 0.2]
+
+  exp_2_json["k"] = k
+  exp_2_json["delta"] = delta
+  exp_2_json["mu"] = mu
+  exp_2_json["P"] = P
+  exp_2_json["experiments"] = dict()
+
+  number = 100
+
+  for n in range(1000, 1_000_000, 1000):
+    exp_2_json["experiments"]["number"] = number
+    exp_2_json["experiments"]["experiments"] = experiment(
+      number, n, k, delta, mu, P
+      )
+    print(f"{n}/1_000_000 Done")
+  
+  with open("exp_2.json", "w", encoding="utf-8") as f:
+    json.dump(exp_2_json, f, indent = 2)
+
+
 if __name__ == '__main__':
-  generate_data_for_E_simple()
+  exp_2()
