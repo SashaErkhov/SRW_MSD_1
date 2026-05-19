@@ -59,30 +59,63 @@ def exp_1():
 def exp_2():
   exp_2_json = {}
 
-  # Фиксирую разряды и распределение
-  k = 1_000_000
-  delta = 1_000
+  # Фиксирую распределение
   mu = 0.7
   P = [0.7, 0.2]
 
-  exp_2_json["k"] = k
-  exp_2_json["delta"] = delta
   exp_2_json["mu"] = mu
   exp_2_json["P"] = P
   exp_2_json["experiments"] = dict()
 
-  number = 100
+  number = 50
 
-  for n in range(1000, 1_000_000, 1000):
+  n = 10
+  while n < 1_000_000:
+    k = n
+    delta = k//2
     exp_2_json["experiments"]["number"] = number
+    exp_2_json["experiments"]["n"] = n
+    exp_2_json["experiments"]["k"] = k
+    exp_2_json["experiments"]["delta"] = delta
     exp_2_json["experiments"]["experiments"] = experiment(
       number, n, k, delta, mu, P
       )
     print(f"{n}/1_000_000 Done")
+    n *= 2
   
   with open("exp_2.json", "w", encoding="utf-8") as f:
     json.dump(exp_2_json, f, indent = 2)
 
+def exp_3():
+  exp_3_json = {}
+
+  # Фиксирую распределение
+  mu = 0.7
+  P = [0.7, 0.2]
+
+  exp_3_json["mu"] = mu
+  exp_3_json["P"] = P
+  exp_3_json["experiments"] = dict()
+
+  number = 20
+
+  n = 10
+  while n < 50_000:
+    k = n * 2
+    delta = k//2
+    exp_3_json["experiments"]["number"] = number
+    exp_3_json["experiments"]["n"] = n
+    exp_3_json["experiments"]["k"] = k
+    exp_3_json["experiments"]["delta"] = delta
+    exp_3_json["experiments"]["experiments"] = experiment(
+      number, n, k, delta, mu, P
+      )
+    print(f"{n}/50_000 Done")
+    n *= 2
+  
+  with open("exp_3.json", "w", encoding="utf-8") as f:
+    json.dump(exp_3_json, f, indent = 2)
+
 
 if __name__ == '__main__':
-  exp_2()
+  exp_3()
