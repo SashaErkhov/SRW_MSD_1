@@ -113,9 +113,41 @@ def exp_3():
     print(f"{n}/50_000 Done")
     n *= 2
   
-  with open("exp_3.json", "w", encoding="utf-8") as f:
+  with open("exp_3_2.json", "w", encoding="utf-8") as f:
     json.dump(exp_3_json, f, indent = 2)
+
+def exp_4():
+  exp_4_json = {}
+
+  # Фиксирую распределение
+  mu = 0.7
+  P = [0.7, 0.2]
+
+  exp_4_json["mu"] = mu
+  exp_4_json["P"] = P
+  exp_4_json["experiments"] = []
+
+  number = 20
+
+  n = 10
+  while n < 40_000:
+    k = n * 2
+    delta = k//2
+    data = {
+      "number": number,
+      "n": n,
+      "k": k,
+      "delta": delta,
+      "experiments": experiment(number, n, k, delta, mu, P)
+    }
+    exp_4_json["experiments"].append(data)
+    print(f"{n}/50_000 Done")
+    n *= 2
+  
+  with open("exp_4.json", "w", encoding="utf-8") as f:
+    json.dump(exp_4_json, f, indent = 2)
+
 
 
 if __name__ == '__main__':
-  exp_3()
+  exp_4()
