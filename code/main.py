@@ -37,102 +37,46 @@ def test_MSD_sort():
   print("cnt =", cnt)
   print("sorted_arr =", *arr)
 
+def update_exp_E():
+  with open('experiments/exp_E.json', 'r') as f:
+    exp_E = json.load(f)
+  for i in range(len(exp_E["experiments"])):
+    old_data = exp_E["experiments"][i]
+    new_data = {
+      "number": old_data["number"],
+      "n": old_data["n"],
+      "k": old_data["k"],
+      "delta": old_data["delta"]
+    }
+    overline_x = 0
+    for j in range(old_data["number"]):
+      overline_x += old_data["experiments"][j]
+    overline_x /= old_data["number"]
+    s_sq = 0
+    for j in range(old_data["number"]):
+      s_sq += (old_data["experiments"][j] - overline_x) ** 2
+    s_sq /= old_data["number"] - 1
+    new_data["overline_X"] = overline_x
+    new_data["S^2"] = s_sq
+    exp_E["experiments"][i] = new_data
+  with open('exp_E_update.json', 'w', encoding="utf-8") as f:
+    json.dump(exp_E, f, indent = 2)
+
 def exp_1():
-  number = 10_000
-  n = 100
-  k = 1000
-  delta = 500
   mu = 0.7
   P = [0.7, 0.2]
-  exp = experiment(number, n, k, delta, mu, P)
-  with open("exp_E_simple.txt", "w") as f:
-    f.write(f'{number}\n')
-    f.write(f'{n}\n')
-    f.write(f'{k}\n')
-    f.write(f'{delta}\n')
-    f.write(f'{mu}\n')
-    f.write(f'{P[0]} {P[1]}\n')
-    for p in exp:
-      f.write(f'{p} ')
-    f.write('\n')
-
-def exp_2():
-  exp_2_json = {}
-
-  # Фиксирую распределение
-  mu = 0.7
-  P = [0.7, 0.2]
-
-  exp_2_json["mu"] = mu
-  exp_2_json["P"] = P
-  exp_2_json["experiments"] = dict()
-
-  number = 50
-
-  n = 10
-  while n < 1_000_000:
-    k = n
-    delta = k//2
-    exp_2_json["experiments"]["number"] = number
-    exp_2_json["experiments"]["n"] = n
-    exp_2_json["experiments"]["k"] = k
-    exp_2_json["experiments"]["delta"] = delta
-    exp_2_json["experiments"]["experiments"] = experiment(
-      number, n, k, delta, mu, P
-      )
-    print(f"{n}/1_000_000 Done")
-    n *= 2
-  
-  with open("exp_2.json", "w", encoding="utf-8") as f:
-    json.dump(exp_2_json, f, indent = 2)
-
-def exp_3():
-  exp_3_json = {}
-
-  # Фиксирую распределение
-  mu = 0.7
-  P = [0.7, 0.2]
-
-  exp_3_json["mu"] = mu
-  exp_3_json["P"] = P
-  exp_3_json["experiments"] = dict()
+  exp_1 = {
+    "mu": mu,
+    "P": P,
+    "experiments": []
+  }
 
   number = 20
 
-  n = 10
-  while n < 50_000:
+  n = 4096 * 2 * 10
+  while True:
     k = n * 2
-    delta = k//2
-    exp_3_json["experiments"]["number"] = number
-    exp_3_json["experiments"]["n"] = n
-    exp_3_json["experiments"]["k"] = k
-    exp_3_json["experiments"]["delta"] = delta
-    exp_3_json["experiments"]["experiments"] = experiment(
-      number, n, k, delta, mu, P
-      )
-    print(f"{n}/50_000 Done")
-    n *= 2
-  
-  with open("exp_3_2.json", "w", encoding="utf-8") as f:
-    json.dump(exp_3_json, f, indent = 2)
-
-def exp_4():
-  exp_4_json = {}
-
-  # Фиксирую распределение
-  mu = 0.7
-  P = [0.7, 0.2]
-
-  exp_4_json["mu"] = mu
-  exp_4_json["P"] = P
-  exp_4_json["experiments"] = []
-
-  number = 20
-
-  n = 10
-  while n < 40_000:
-    k = n * 2
-    delta = k//2
+    delta = k // 2
     data = {
       "number": number,
       "n": n,
@@ -140,14 +84,12 @@ def exp_4():
       "delta": delta,
       "experiments": experiment(number, n, k, delta, mu, P)
     }
-    exp_4_json["experiments"].append(data)
-    print(f"{n}/50_000 Done")
+    print(f'{n} - Done')
+    exp_1["experiments"].append(data)
+    with open("exp_1.json", "w", encoding="utf-8") as f: 
+      json.dump(exp_1, f, indent = 2)
+    print(f'{n} - Send')
     n *= 2
-  
-  with open("exp_4.json", "w", encoding="utf-8") as f:
-    json.dump(exp_4_json, f, indent = 2)
-
-
 
 if __name__ == '__main__':
-  exp_4()
+  exp_1()
