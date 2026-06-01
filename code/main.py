@@ -1,9 +1,9 @@
-from generator import generator_numpy, experiment
+from generator import generator, experiment
 from sort import counting_sort, MSD_sort
 from scipy import stats
 import json
 from specific import H, sigma_square
-from math import log, sqrt, log2
+from math import log, sqrt, log2, floor
 import matplotlib.pyplot as plt
 import resource
 import numpy as np
@@ -300,33 +300,8 @@ def freq_analyze():
     exp = json.load(f)
   number = exp["number"]
   experiments = exp["experiments"]
-  n = exp["n"]
-  P = exp["P"]
   overlune_X = sum(experiments) / number
   s_sq = (sum([(p - overlune_X)**2 for p in experiments])) / (number - 1)
-
-  alpha = 0.05
-  t_crit = stats.t.ppf(1 - alpha/2, number - 1)
-  se = sqrt(s_sq / number)
-  CI = (overlune_X - t_crit * se, overlune_X + t_crit * se)
-
-  H_val = H(P)
-  C_low = (CI[0] - (1.0 / H_val)*n*log(n)) / n
-  C_high = (CI[1] - (1.0 / H_val)*n*log(n)) / n
-  C = (C_low + C_high) / 2
-  E = (1.0 / H_val) * n * log(n) + C * n
-  assert E <= CI[1] and E >= CI[0]
-
-  df = number - 1
-  CI = ((df * s_sq) / stats.chi2.ppf(1 - alpha/2, df), (df * s_sq) / stats.chi2.ppf(alpha/2, df))
-  main_part = sigma_square(P) * n * log(n)
-  C_low = (CI[0] - main_part) / (n * sqrt(log(n)))
-  C_high = (CI[1] - main_part) / (n * sqrt(log(n)))
-  C = (C_low + C_high) / 2
-  Var = main_part + C * n * sqrt(log(n))
-  assert Var <= CI[1] and Var >= CI[0]
-
-  #Bins = int(1 + log2(n))
 
   cnt, bins, ignored = plt.hist(experiments, bins = 'auto',
                                 density = True, alpha = 0.6,
@@ -334,7 +309,7 @@ def freq_analyze():
                                 label='Экспериментальные данные')
   
   x = np.linspace(bins.min(), bins.max(), 100)
-  pdf = stats.norm.pdf(x, loc = E, scale = sqrt(Var))
+  pdf = stats.norm.pdf(x, loc = overlune_X, scale = sqrt(s_sq))
   plt.plot(x, pdf, color = 'crimson',lw = 2.5, label = 'Теоретическая плотность')
 
   plt.xlabel('Трудоёмкость')
@@ -345,9 +320,64 @@ def freq_analyze():
   #plt.savefig("freq.png", dpi = 300, bbox_inches="tight")
   plt.show()
 
+def pirson():
+  with open("experiments/exp_for_frequency.json", "r") as f:
+    exp = json.load(f)
+  number = exp["number"]
+  experiments = exp["experiments"]
+  overline_X = sum(experiments) / number
+  s_sq = (sum([(p - overline_X)**2 for p in experiments])) / (number - 1)
+  alpha = 0.05
 
+  bins = 1 + floor(log2(number))
+  print(f'Было {bins} бакетов')
+  counts, bin_edges = np.histogram(experiments, bins = bins)
+  expected_edges = bin_edges.copy()
+  expected_edges[0] = -np.inf
+  expected_edges[-1] = np.inf
+
+  theory = np.diff(stats.norm.cdf(expected_edges, loc = overline_X, scale = sqrt(s_sq)))
+  expected_cnt = theory * number
+  
+  obs = list(counts)
+  exp = list(expected_cnt)
+  i = 0
+  while i < len(exp):
+    if exp[i] < 5 and len(exp) > 1:
+      if i < len(exp) - 1:
+        exp[i+1] += exp[i]
+        obs[i+1] += obs[i]
+        exp.pop(i)
+        obs.pop(i)
+      else:
+        exp[i-1] += exp[i]
+        obs[i-1] += obs[i]
+        exp.pop(i)
+        obs.pop(i)
+        i -= 1
+    else:
+      i += 1
+
+  counts_merged = np.array(obs)
+  expected_cnt_merged = np.array(exp)
+  print(f'Осталось {len(expected_cnt_merged)} бакетов')
+
+  assert len(expected_cnt_merged) > 3
+  assert np.all(expected_cnt_merged >= 5)
+
+  chi2_stat, p_value = stats.chisquare(f_obs=counts_merged, f_exp=expected_cnt_merged, ddof=2)
+
+  print(f"Статистика Хи-квадрат: {chi2_stat}")
+  print(f"p-value: {p_value:}")
+
+  if p_value > alpha:
+      print(f"p-value > {alpha}. Нулевая гипотеза НЕ отклоняется.")
+      print("Экспериментальные данные согласуются с теоретическим нормальным распределением.")
+  else:
+      print(f"p-value <= {alpha}. Нулевая гипотеза отклоняется.")
+      print("Экспериментальные данные статистически значимо отличаются от теории.")
 
 if __name__ == '__main__':
   limit = 8 * 1024 * 1024 * 1024
   resource.setrlimit(resource.RLIMIT_AS, (limit, limit))
-  freq_analyze()
+  pirson()
