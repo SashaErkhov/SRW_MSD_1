@@ -4,15 +4,78 @@
 
 \input{preamble.tex}
 
-% То, что в квадратных скобках, отображается внизу по центру каждого слайда. 
-\title[Короткое название]{Полный официальный заголовок квалификационной работы}
+\usepackage{listings}
+\usepackage{xcolor}
+% Цвета для подсветки
+\definecolor{json_key}{RGB}{0,128,128}     % Бирюзовый для двоеточий/ключей
+\definecolor{json_string}{RGB}{42,0,255}   % Синий для строк
+\definecolor{json_number}{RGB}{192,0,0}     % Темно-красный для чисел (по желанию)
 
-% То, что в квадратных скобках, отображается в левом нижнем углу. 
+\lstdefinelanguage{json}{
+	string=[b]", % корректная обработка строк в кавычках
+	stringstyle=\color{json_string}\ttfamily,
+	% Заменяем только двоеточие, чтобы подсветить структуру, не трогая запятые и скобки
+	literate=
+	*{:}{{{\color{json_key}{:}}}}{1},
+	% Если хотите, чтобы числа тоже подсвечивались, раскомментируйте строки ниже:
+	%  {0}{{{\color{json_number}0}}}{1}
+	%  {1}{{{\color{json_number}1}}}{1}
+	%  {2}{{{\color{json_number}2}}}{1}
+	%  {3}{{{\color{json_number}3}}}{1}
+	%  {4}{{{\color{json_number}4}}}{1}
+	%  {5}{{{\color{json_number}5}}}{1}
+	%  {6}{{{\color{json_number}6}}}{1}
+	%  {7}{{{\color{json_number}7}}}{1}
+	%  {8}{{{\color{json_number}8}}}{1}
+	%  {9}{{{\color{json_number}9}}}{1}
+	%  {.}{{{\color{json_number}.}}}{1},
+}
+
+\lstset{
+	basicstyle=\ttfamily\small,
+	showstringspaces=false,
+	breaklines=true,
+	extendedchars=true, % важный параметр для поддержки спецсимволов и кириллицы
+	literate={-}{{-}}1 % предотвращает превращение дефисов в длинные тире
+}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+	backgroundcolor=\color{backcolour},
+	commentstyle=\color{codegreen},
+	keywordstyle=\color{magenta},
+	numberstyle=\tiny\color{codegray},
+	stringstyle=\color{codepurple},
+	basicstyle=\ttfamily\footnotesize,
+	breakatwhitespace=false,
+	breaklines=true,
+	captionpos=b,
+	keepspaces=true,
+	numbers=left,
+	numbersep=5pt,
+	showspaces=false,
+	showstringspaces=false,
+	showtabs=false,
+	tabsize=2
+}
+
+\usepackage{setspace}
+
+\lstset{style=mystyle}
+
+% То, что в квадратных скобках, отображается внизу по центру каждого слайда.
+\title[Анализ MSD-сортировки]{Вероятностный апостериорный анализ трудоёмкости MSD-сортировки}
+
+% То, что в квадратных скобках, отображается в левом нижнем углу.
 \institute[СПбГУ]{}
 
 % То, что в квадратных скобках, отображается в левом нижнем углу.
-\author[Василий Пупкин]{Василий Иванович Пупкин, группа ХХ.БХХ-мм}
- 
+\author[Ерхов А. А.]{Ерхов Александр Александрович, группа 23.Б12-ПУ}
+
 \begin{document}
 {
 \setbeamertemplate{footline}{}
@@ -24,7 +87,7 @@
 \begin{center}
    \begin{tabular}{c}
         \scriptsize{Санкт-Петербургский государственный университет} \\
-        \scriptsize{Кафедра системного программирования}
+        \scriptsize{Кафедра компьютерных технологий и систем}
     \end{tabular}
 \titlepage
 \end{center}
@@ -33,246 +96,184 @@
 
 {\scriptsize
   % У научного руководителя должна быть указана научная степень
-   \textbf{Научный руководитель:} к.ф.-м.н. А.А. Андреев, доцент кафедры системного программирования \\
-  % Консультанта может и не быть. Должна быть указана должность или ученая степень
-   \textbf{Консультант:}  П.П. Петров, программист ЗАО \enquote{Компания с ну очень-очень-очень длинным названием}\\
-  % Для курсовой не обязателен. Должна быть указана должность или ученая степень
-   \textbf{Рецензент:} д.т.н., проф. И.И. Иванов, исполнительный директор ООО \enquote{Рога и копыта}  
- }
+   \textbf{Научный руководитель:} Никифоров Константин Аркадьевич, доцент кафедры моделирования электромеханических и компьютерных систем, кандидат физико-математических наук.
+}
 \begin{center}
   \vspace{5pt}
   \scriptsize{Санкт-Петербург\\
-                 2023}
+                 2026}
   \end{center}
 
 \end{frame}
 }
 
-\begin{frame}[fragile]  
+\begin{frame}[fragile]
   \frametitle{Введение}
+  \textbf{Цель} -- провести апостериорный анализ трудоёмкости MSD-сортировки на основе результатов полученных в “A Limit Theorem for Radix Sort and Tries with Markovian Input” [1].
+  \\ \textbf{Задачи:}
   \begin{itemize}
-    \item Краткий обзор тематики работы (как вариант~--- устно, пока показывается титульный слайд)
-    \item Не нужно определять общеизвестные понятия
-    \item Применимость/полезность данной работы, обоснование выбора именно этой темы 
-    \item Если тема похожа на темы других работ (в том числе прошлых лет), надо явно описать разницу
-  \end{itemize}
-\end{frame}
-            
-\begin{frame}  
-  \frametitle{Существующие решения (инструменты, подходы, алгоритмы)}
-  \begin{itemize}
-    \item Перечислить инструменты/подходы, применяемые в области
-    \item Указать их преимущества и недостатки (критика существующих решений/подходов)    
-  \end{itemize}
-    
-\end{frame}
-
-\begin{frame}  
-  \frametitle{Существующие решения}
-  Возможно, предметная область сложна и потребуется больше одного слайда, но затягивать введение не стоит. Постарайтесь уложиться в 1--2 слайда
-  \begin{itemize}
-    \item Выводы
-    \begin{itemize}
-      \item Подвести итог
-      \item Указать недостатки существующих подходов, на борьбу с которыми 
-направленна данная работа
-      \item Чётко сформулировать существующую проблему, которая будет решаться в данной работе
-    \end{itemize}
+    \item Исследование материала [1].
+    \item Разработка алгоритма на основе модели, приведенной в [1].
+    \item Проведение вычислительного эксперимента.
+    \item Проверка вхождения математического ожидания и дисперсии в соответствующие доверительные интервалы.
+    \item Проверка центральной предельной теоремы c помощью критерия Пирсона.
   \end{itemize}
 \end{frame}
 
-
-% Обязательный слайд: четкая формулировка цели данной работы и постановка задачи
-% Описание выносимых на защиту результатов, процесса или особенностей их достижения и т.д.
 \begin{frame}
   \frametitle{Постановка задачи}
-  \textbf{Целью} работы является решение какой-то проблемы %озвученной выше  
+  Будем рассматривать словарь (массив слов). Пусть алфавит $\Sigma = \{0, 1\}$. Количество символов в слове непостоянно. Количество слов в словаре также заранее не известно -- $n$.
 
-  \textbf{Задачи}:
-  \begin{itemize}
-    \item Выбрать алгоритм, подход, метод %основываясь на проведённом анализе проблемы, области, существующих решений
-    \item Разработать алгоритм, делающий то-то с тем-то
-    \item Доказать корректность алгоритма
-    \item Реализовать предложенный алгоритм
-    \item Провести экспериментальное исследование предложенной реализации 
-  \end{itemize}
+  \textbf{Генерация словаря.} Каждое слово генерируется независимо друг от друга. Начальный символ, в каждом слове, выбирается согласно начальному распределению $\mu$, т. е. $P(\xi = 0) = \mu_0$, $P(\xi = 1) = \mu_1$, где $\mu_0+\mu_1=1$. Далее используем марковские цепи: каждый следующий символ зависит только от предыдущего, в соответствии с матрицей переходов $P = [p_{ij}], i, j \in \{0, 1\}$. При этом $p_{ij}\neq \dfrac{1}{2}, \forall i, j$ (Этот случай исключается как тривиальный). Также здесь введем понятие \textit{энтропии}:
+  \begin{equation}
+    H = \sum_i\pi_iH_i, \text{ где} \label{eq:H}
+  \end{equation}
+  \[
+    H_i = - \sum_jp_{ij}\log p_{ij}, \pi_0=\dfrac{p_{10}}{p_{01}+p_{10}}, \pi_1 = \dfrac{p_{01}}{p_{01}+p_{10}}.
+  \]
 \end{frame}
-            
-%Идеально, если есть по одному слайду на каждую поставленную задачу            
 
 \begin{frame}
-  \frametitle{Алгоритм ABC\footnote{Результаты и обоснования выбора пути достижения цели}}
-  За основу решения взят алгоритм ABC
-  \begin{itemize}
-    \item Почему именно он, а не другие
-    \item Ключевые особенности выбранного алгоритма, важные для решения поставленных задач    
-  \end{itemize}
-\end{frame}
-
-
-\begin{frame}[fragile]
-\frametitle{Новый алгоритм\footnote{Иллюстративные возможности: таблицы, картинки, код}}
-% Задается ширина столбцов
-\begin{tabular}{p{5cm} p{7cm}}
-% Фрагмент кода
-\begin{minipage}{3in}
-  \begin{Verbatim}[commandchars=\\\{\}]
-
-\textcolor{blue}{string} res = \textcolor{orange}{""};
-\textcolor{blue}{for}(i = 0; i < l; i++) \{
-    res = \textcolor{orange}{"()"} + res;
-\}   
-
-  \end{Verbatim}
-\end{minipage}
-&
-Результат (SPPF):
-\\
-Аппроксимация: 
-&
-% Картинка. Изображения должны быть векторными. Исключения --- снимки экрана.
-\multirow{-2}*{\!\includegraphics[width=6.8cm]{pictures/out3.pdf}}
-\\
-\includegraphics[width=2.5cm]{pictures/in3.pdf}
-&
-\\      
-Грамматика: &
-\\
-\vspace{-20pt}
-% Можно формулы писать
-{\begin{align*}
-  start& & &\Coloneq & &s \\
-  s & & &\Coloneq & &\mbox{\texttt{LBR }} s \mbox{\texttt{ RBR }} s \\
-  s & & &\Coloneq & &\epsilon
-\end{align*}}
-& 
-\end{tabular}
+  \frametitle{Априорный анализ}
+  \begin{equation}
+    \mathbb{E}[B_n^\mu] = \dfrac{1}{H}n\log n+O(n); \label{eq:E}
+  \end{equation}
+  \begin{equation}
+    Var(B_n^\mu) = \sigma^2n\log n+O(n\sqrt{\log n}), \text{ где} \label{eq:Var}
+  \end{equation}
+  \[
+    \begin{split}
+          \sigma^2 = & \dfrac{\pi_0p_{00}p_{01}}{H^3}\left(\log(p_{00}/p_{01})+ \dfrac{H_1-H_0}{p_{01}+p_{10}}\right)^2 + \\
+          & + \dfrac{\pi_1p_{10}p_{11}}{H^3}\left(\log(p_{10}/p_{11})+\dfrac{H_1-H_0}{p_{01}+p_{10}}\right)^2;
+    \end{split}
+  \]
+  \begin{equation}
+    \dfrac{B_n^\mu-\mathbb{E}[B_n^\mu]}{\sqrt{Var(B_n^\mu)}}  \stackrel{d}{\longrightarrow} \mathcal{N}(0,1) \label{eq:distribution}.
+  \end{equation}
 \end{frame}
 
 \begin{frame}[fragile]
-  \frametitle{Доказательство корректности алгоритма}
-  {\tiny Формулировки утверждений. Идеи доказательств проговариваются устно.}
-  \begin{rutheorem}[Пифагора: геометрическая формулировка]
-    В прямоугольном треугольнике площадь квадрата, построенного на гипотенузе, равна сумме площадей квадратов, построенных на катетах.
-  \end{rutheorem}
+  \frametitle{Реализация}
+  \begin{lstlisting}[language=Python]
+  def MSD_sort(
+      arr: list[str],
+      n: int
+  ) -> int:
+    stack = [(0, 0, n)] # digit, left, right
+    total_count = 0
 
-  \begin{rutheorem}[Пифагора: алгебраическая формулировка]
-    В прямоугольном треугольнике квадрат длины гипотенузы равен сумме квадратов длин катетов.    
+    while stack:
+      digit, left, right = stack.pop()
+      if right-left <= 1 or digit >= max(len(arr[i]) for i in range(left, right)):
+        continue
+      count, groups = counting_sort(arr, left, right, digit)
+      total_count += count
+      for i in range(1, len(groups)):
+        new_left, new_right = groups[i]
+        if new_right - new_left > 1:
+          stack.append((digit+1, new_left, new_right))
 
-    То есть, если обозначить длину гипотенузы треугольника через $c$, а длины катетов 
-через $a$ и $b$, получим верное равенство: $a^2 + b^2 = c^2$.
-  \end{rutheorem}
-
-  \begin{rutheorem}[Обратная теорема Пифагора]
-    Для всякой тройки положительных чисел $a$, $b$ и $c$, такой, что $a^2 + b^2 = c^2$, существует прямоугольный треугольник с катетами $a$ и $b$ и гипотенузой $c$.
-  \end{rutheorem}  
+    return total_count
+  \end{lstlisting}
 \end{frame}
 
-\begin{frame}[fragile]
-  \frametitle{Архитектура решения}
-  \begin{itemize}
-    \item В реализации интересны архитектура, библиотеки, инструменты
-    \item Не надо добавлять на слайд примеры кода
-  \end{itemize}
+\begin{frame}
+  \frametitle{Вычислительный эксперимент}
+  $n = 10, 20, 40, ... 4096$ -- количество слов\\
+  $k = 2n$ -- длинна слова\\
+  $\Delta = n$ -- на столько может изменяться длинна слова ($k \pm \Delta$)\\
+  $\mu = 0.7$ -- начальное распределение\\
+  $P = [0.7, 0.2]$ -- матрица переходов\\
+  $K = 60$ -- количество экспериментов для каждого $n$
+\end{frame}
+
+\begin{frame}
+  \frametitle{Анализ}
   \begin{center}
-  \includegraphics[width=0.8\textwidth]{pictures/Activ_SEL_Processing.pdf}
+    Для каждой выборки:\\
+    \begin{doublespace}
+      $\overline{X} = \dfrac{1}{K}\sum_{i=1}^{K}X_i$\\
+      $S^2 = \dfrac{1}{K-1}\sum_{i=1}^{K}(X_i-\overline{X})^2$\\
+      $\alpha = 0.05 \Rightarrow t_{crit} = 2.001$\\
+      $CI = [\overline{X}-t_{crit}\dfrac{S}{\sqrt{K}}, \overline{X}+t_{crit}\dfrac{S}{\sqrt{K}}]$
+    \end{doublespace}
+    Нахождение констант:\\
+    \begin{spacing}{2.5}
+      $\nexists C: \dfrac{1}{H}n\log{n}+Cn \in CI, \forall n$\\
+      $\exists C: \dfrac{2}{H}n\log{n}+Cn \in CI, \forall n$
+    \end{spacing}
   \end{center}
 \end{frame}
 
-\begin{frame}[t]
-  \frametitle{Экспериментальное исследование}
-  Постановка эксперимента
-  \begin{itemize}
-    \item На каком наборе данных проводилось экспериментальное исследование, почему были выбраны именно эти данные    
-    \item На каком оборудовании проводилось исследование    
-    \item Какие решения были выбраны для сравнения и почему
-  \end{itemize}  
-\end{frame}
-
-\begin{frame}[t]
-  \frametitle{Результаты экспериментального исследования}
-  \begin{itemize}  
-    \item Какие результаты показало экспериментальное исследование
-    \item Желательно привести графики, иллюстрирующие полученные результаты
-    \begin{itemize}
-      \item У иллюстраций должны быть подписи, у графиков~--- легенда, подписи к осям, например:
-    \end{itemize}
-  \end{itemize}
-  \includegraphics[width=10cm]{pictures/dist.png}
-\end{frame}
-
-
 \begin{frame}
-  \frametitle{Результаты}
-  \begin{itemize}
-    \item Практически то же, что и на слайде с постановкой задачи, но в совершенной форме~--- что делал лично автор
-    \item Четкое отделение результатов своей работы (особенно для коллективных работ)
-      \item Формулировать глаголами совершенного вида в прошедшем времени (\enquote{сделано}, \enquote{получено})
-    \item Обсуждение (ограничения, валидность, альтернативы)
-    \item Не нужно слайдов типа \enquote{Все}, \enquote{Вопросы?}, \enquote{Спасибо за внимание}
-  \end{itemize}
-
-  \begin{itemize}
-    \item Если результаты были представлены на конференции и опубликованы, это желательно указать 
-  \end{itemize}
-\end{frame}
-
-%\addtocounter{framenumber}{1}
-\appendix
-
-\begin{frame}
-  \frametitle{Дополнительный слайд}
-  Например, с огромной страшной формулой всего, которая нужна для пояснения деталей при ответе на частый вопрос
-  
-\begin{align*}
-  \MoveEqLeft \lim_{\bigtriangleup t \to 0^+}\int_{\bigtriangleup t}^{T} \! \int_{\Omega} \! D(t_1,x) \frac{\varphi(t_1-\bigtriangleup t,x)-\varphi(t_1,x)}{(-\bigtriangleup t)} \, \mathrm{d}x \, \mathrm{d}t_1 \\
-  &= \lim_{\bigtriangleup t \to 0^+} \int_{0}^{T} \! \int_{\Omega} \! D(t_1,x) \frac{\varphi(t_1-\bigtriangleup t,x)-\varphi(t_1,x)}{(-\bigtriangleup t)} \chi_{(\bigtriangleup t,T)}(t_1) \, \mathrm{d}x \, \mathrm{d}t_1 \\
-  &=\int_{0}^{T} \! \int_{\Omega} \! D(t_1,x) \frac{\partial \varphi}{\partial t_1} (t_1,x) \, \mathrm{d}x \, \mathrm{d}t_1 .
-\end{align*}
+  \frametitle{Анализ}
+  \begin{center}
+    $\Delta = \overline{X} - \dfrac{1}{H}n\log{n}$\\
+    \begin{figure}[h]
+      \center{\includegraphics[width=0.7\linewidth]{pictures/Delta.png}}
+      \caption{\label{img:Delta}График нормированных остатков}
+    \end{figure}
+  \end{center}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Второй дополнительный слайд}
-\begin{itemize}
-  \item Много дополнительных слайдов не надо: 1--2 вполне достаточно в большинстве случаев
-  \item Кроме формул здесь могут быть схемы, рисунки, таблицы и другие вспомогательные материалы
-\end{itemize}
-
+  \frametitle{Дисперсия}
+  \begin{onehalfspace}
+      Так как по результату (\ref{eq:distribution}) наша случайная величина имеет нормальное распределение, то для проверки дисперсии имеет место $\chi^2$-интервал:
+  \end{onehalfspace}
+  \begin{spacing}{2.5}
+    \begin{center}
+      $CI = \left[\dfrac{(K-1)S^2}{\chi^2_{1-\alpha/2,K-1}}, \dfrac{(K-1)S^2}{\chi^2_{\alpha/2, K-1}}\right]$\\
+      $\exists C: \sigma^2n\log{n}+Cn\sqrt{\log{n}}$
+    \end{center}
+  \end{spacing}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Анимация}
-  Чаще всего анимированные слайды не требуются, но если очень надо, возможность добавить анимацию в PDF есть.
-  Используйте анимацию на слайдах с умом и только в случае необходимости (см. комментарий в исходном тексте)
-  % !!! ВНИМАНИЕ !!!
-  % Для воспроизведения анимированных иллюстраций необходимо использовать просмотрщик PDF, поддерживающий исполнение скриптов, например
-  % - Adobe Acrobat Reader
-  % - Okular
-  %
-  % Проблема в том, что многие популярные просмотрщики это делать не умеют, например
-  % - Evince
-  % - Web-браузеры
-  %
-  % Часто показывать презентацию вы будете не со своего компьютера, на котором может не быть подходлящего просмотрщика.
-  % Поэтому пользуйтесь анимацией на свой страх и риск!!!
-  %
-  % Полезные материалы
-  % - https://tug.ctan.org/macros/latex/contrib/animate/animate.pdf — документация к пакету animate
-  % - https://texblog.org/2018/03/05/the-animate-package/ — коротенький гайд для минимального примера
-
-  \setlength{\fboxsep}{0pt}
-  \setlength{\fboxrule}{0.5pt}
-  \begin{figure}[h]
-    \begin{minipage}{0.45\textwidth}
-        \centering
-        \fbox{\animategraphics[autoplay, loop, scale=0.3]{7}{pictures/sensors/sensors-}{1}{26}}
-    \end{minipage}
-    \begin{minipage}{0.45\textwidth}
-        \centering
-        \fbox{\animategraphics[autoplay, loop, scale=0.3]{7}{pictures/encoders/encoders-}{1}{24}}
-    \end{minipage}
-    \caption{Сенсоры и энкодеры}
-  \end{figure}
+  \frametitle{Исследование распределения}
+  \begin{center}
+    $K = \left(\dfrac{z_{1-\alpha/2}\sigma}{\delta}\right)^2$\\
+    \begin{figure}[h]
+      \center{\includegraphics[width=0.6\linewidth]{pictures/freq.png}}
+      \caption{\label{img:freq}Гистограмма частот}
+    \end{figure}
+    $b = 1 + \lfloor \log_2{K} \rfloor$
+  \end{center}
 \end{frame}
+
+\begin{frame}
+  \frametitle{Заключение}
+  Поставленные в разделе \textit{Введение} цель и задачи выполнены. Вероятностная модель, описывающая поведение MSD-сортировки на данных, сгенерированных марковским источником, доказала свою точность. Алгоритм, несмотря на высокую трудоемкость в худшем случае, поддается строгому прогнозированию в среднем случае при известной матрице переходов алфавита.
+\end{frame}
+
+{
+\setbeamertemplate{footline}{}
+% Лого университета или организации, отображается в шапке титульного листа
+\begin{frame}
+  \includegraphics[width=1.4cm]{pictures/SPbGU_Logo.png}
+\vspace{-35pt}
+\hspace{-10pt}
+\begin{center}
+   \begin{tabular}{c}
+        \scriptsize{Санкт-Петербургский государственный университет} \\
+        \scriptsize{Кафедра компьютерных технологий и систем}
+    \end{tabular}
+\titlepage
+\end{center}
+
+\btVFill
+
+{\scriptsize
+  % У научного руководителя должна быть указана научная степень
+   \textbf{Научный руководитель:} Никифоров Константин Аркадьевич, доцент кафедры моделирования электромеханических и компьютерных систем, кандидат физико-математических наук.
+}
+\begin{center}
+  \vspace{5pt}
+  \scriptsize{Санкт-Петербург\\
+                 2026}
+  \end{center}
+
+\end{frame}
+}
 
 \end{document}

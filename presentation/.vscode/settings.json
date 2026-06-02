@@ -48,6 +48,7 @@
             "env": {}
         },
     ],
+    "latex-workshop.latex.autoBuild.run": "never",
     "latex-workshop.latexindent.args": [
         "-l=%DIR%/.latexindent.yaml",
         "-m",
